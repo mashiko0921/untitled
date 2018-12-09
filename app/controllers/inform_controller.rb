@@ -17,4 +17,6 @@ class InformController < ApplicationController
 
 
   end
-end
+  def nakenashi
+    end
+  end

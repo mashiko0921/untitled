@@ -1,8 +1,8 @@
   Rails.application.routes.draw do
-
+    root "inform#gamen_sentaku"
     get "inform/hatsugen_inf"
-    get "inform/:ht11" => "inform#toukou"
-    get "inform/:re_id" => "inform#toukou"
+    get "inform/hatsugen_inf/:ht11" => "inform#toukou"
+    get "inform/hatsugen_inf/:re_id" => "inform#toukou"
     get "inform/toukou" => "inform"
     get "/b_inform/bosyuu_inf"
     get "b_inform/:ht22" => "b_inform#toukou"
