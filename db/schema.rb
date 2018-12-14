@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_12_194950) do
+ActiveRecord::Schema.define(version: 2018_12_13_144726) do
 
   create_table "photos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -24,10 +24,10 @@ ActiveRecord::Schema.define(version: 2018_12_12_194950) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "photo2_file_name"
-    t.string "photo2_content_type"
-    t.bigint "photo2_file_size"
-    t.datetime "photo2_updated_at"
+    t.string "photo_file_name"
+    t.string "photo_content_type"
+    t.bigint "photo_file_size"
+    t.datetime "photo_updated_at"
   end
 
 end

@@ -25,7 +25,10 @@ class PicturesController < ApplicationController
   # POST /pictures.json
   def create
     @picture = Picture.new(picture_params)
+require 'mini_magick'
+    require 'tempfile'
 
+  #  @uploaded_file_path=uploaded_file.path
     respond_to do |format|
       if @picture.save
         format.html { redirect_to @picture, notice: 'Picture was successfully created.' }
@@ -67,8 +70,8 @@ class PicturesController < ApplicationController
       @picture = Picture.find(params[:id])
     end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
-  def picture_params
-    params.require(:picture).permit(:name, :photo2)
-  end
+    # Never trust parameters from the scary internet, only allow the white list through.
+    def picture_params
+      params.require(:picture).permit(:name)
+    end
 end
