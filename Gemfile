@@ -49,8 +49,21 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
+#非共有ファイル設定
 gem 'config'
 
+#アカウント機能用
 gem 'devise'
 
+#クラス図生成
 gem 'railroady'
+
+#jQuery
+gem 'jquery-rails'
+
+# 日本語化設定時のエラーの日本語化のため
+gem 'rails-i18n'
+
+# 外部キー補助　
+# 参照データが消えたとき、それを外部キーとするデータを自動で消すため
+# gem 'foreigner'
