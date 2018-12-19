@@ -15,6 +15,7 @@ class CreateRecruitments < ActiveRecord::Migration[5.2]
       t.bigint :account_id, null: false , index: true
 
       t.timestamps
+        end
+      end
     end
-  end
-end
+
