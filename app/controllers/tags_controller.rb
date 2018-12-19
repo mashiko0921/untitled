@@ -14,18 +14,24 @@ class TagsController < ApplicationController
         @inputtag = set_taghistory(params[:taghistoryid][:id])
       else
         history = Taghistory.find_by(display: nil)
-        history.touch
-        history.save
+        if history.present? then
+          history.touch
+          history.save
+        else
+          history = Taghistory.new(acc_id: current_account.acc_id)
+          history.save
+        end
         @inputtag = Inputtag.new
       end
     end
+    @view_num = '1'
+    @view_com_num = '5'
     @inputtag.freetagnum = @inputtag.count_freetag #タグの数をかうんと
-    @comment = Comment.new
+
     @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry) #入力タグで検索
     @recruitment = Recruitment.new
     @taghistoryid = Taghistoryid.new
     if account_signed_in? && params[:type] == "input" then
-
       add_taghistory(inputtag_params)
     end
     render template: 'mains/index'
