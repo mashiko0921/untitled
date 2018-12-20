@@ -29,6 +29,10 @@
         <% end %>
       <span class="box_comment2">
         <%= link_to '返信📨', comments_index_path(recruitment.id), method: :get  %>
+
+        <%if recruitment.photo_file_size  != nil%>
+        <%= link_to 'ファイルを表示する', recruitment.file_id %>
+          <%end %>
       </span>
       <span>
         <%= render partial: 'bookmarks/bookmark', locals: { recruitment_id: recruitment.id} %>

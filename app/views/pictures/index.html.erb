@@ -11,12 +11,12 @@
   </thead>
 
   <tbody>
-    <% @pictures.each do |picture| %>
+    <% recruitments.each do |recruitment| %>
       <tr>
-        <td><%= picture.name %></td>
-        <td><%= link_to '見る', picture %></td>
-        <td><%= link_to '編集', edit_picture_path(picture) %></td>
-        <td><%= link_to '削除', picture, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= recruitment.name %></td>
+        <td><%= link_to '見る', recruitment %></td>
+        <td><%= link_to '編集', edit_recruitment_path(recruitment) %></td>
+        <td><%= link_to '削除', recruitment, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>
@@ -24,4 +24,4 @@
 
 <br>
 
-<%= link_to 'ファイルをアップロードする', new_picture_path %>
+<%= link_to 'ファイルをアップロードする', new_recruitment_path %>

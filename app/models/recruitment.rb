@@ -5,9 +5,19 @@ class Recruitment < ApplicationRecord
   has_many :chat_comments, dependent: :destroy
   has_many :tagmaps, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
-
+  #has_many :pictures, dependent: :destroy
   validates :detail, presence: true
   validates :title, presence: true
+
+
+  has_attached_file :photo,# styles: { medium: "300x300>"},
+                    :url  =>"/assets/arts/:id/:style/:basename.:extension", # 画像保存先のURL先
+                    :path => "#{Rails.root}/public/assets/arts/:id/:style/:basename.:extension" # サーバ上の画像保存先パス
+
+  # ファイルの拡張子を指定（これがないとエラーが発生する）
+  validates_attachment :photo, content_type: { content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif","application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document"] },
+                       #presence: true,  # ファイルの存在チェックはいらないはず
+                       less_than: 5.megabytes# ファイルサイズのチェック
 
 
   # タグ名の配列からそのタグをすべて含む発言を取得する
@@ -115,4 +125,5 @@ class Recruitment < ApplicationRecord
     end
     com
   end
-end
+
+ end

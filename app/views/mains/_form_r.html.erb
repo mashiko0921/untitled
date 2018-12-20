@@ -15,6 +15,7 @@
   <table class="form">
     <td>
       <div class="field">
+
         <%= form.label :タイトル %>
         <%= form.text_field :title %>
       </div>
@@ -22,6 +23,7 @@
         <%= form.select :chat, [["有","有"],["無","無"]] %>
 
       <div class="field"　>
+        <div><%= form.file_field :photo %><div>
       <%= form.label :募集 %>
         <%= form.text_area :detail,rows:"5",cols:"50",maxlength:"1000"%>
       </div>
