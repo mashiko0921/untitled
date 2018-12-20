@@ -9,7 +9,7 @@ class CreateRecruitments < ActiveRecord::Migration[5.2]
       t.string :detail, :limit=>1000 #発言本文or募集詳細文
       t.string :ans_com_id           #結果返信ID
       t.string :answer, :limit=>1000 #結果本文
-      t.string :file_id              #ファイルID
+      t.string :file_id              #ファイルID，pictureテーブルのidを格納させる
       t.string :chat                 #チャットの有無
 
       t.bigint :account_id, null: false , index: true

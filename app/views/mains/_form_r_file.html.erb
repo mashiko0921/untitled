@@ -1,23 +1,23 @@
 <%= stylesheet_link_tag "box.css", :media => "all" %>
-
-<%= form_with(model: recruitment, url: recruitments_create_path(view_com_num), local: true) do |form| %>
-  <% if recruitment.errors.any? %>
+<%= form_with(model: picture, local: true) do |form| %>
+  <% if picture.errors.any? %>
     <div id="error_explanation">
-      <h2><%= recruitment.errors.count %>個のエラーがあります:</h2>
+      <h2><%= pluralize(picture.errors.count, "error") %> prohibited this picture from being saved:</h2>
 
       <ul>
-        <% recruitment.errors.full_messages.each do |message| %>
+        <% picture.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
       </ul>
     </div>
+  <% end %>
   <% end %>
 
   <table class="form">
     <td>
       <%= form.label :発言 %>
       <div><%= form.file_field :photo %><div>
-      <%= form.text_area :detail,rows:"5",cols:"50",maxlength:"1000"%>
+      <%= form.text_area :name,rows:"5",cols:"50",maxlength:"1000"%>
         <div class="field">
 
       </div>
