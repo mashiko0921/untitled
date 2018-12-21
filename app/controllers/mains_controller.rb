@@ -1,12 +1,8 @@
 class MainsController < ApplicationController
 
   def index
-    if params.has_key?(:view_num) then
-      @view_num = params[:view_num]
-    else
-      @view_num = '1'
-    end
-    logger.debug(@view_num)
+
+    @view_num = '1'
     @view_com_num = '5'
     @bookmark = Bookmark.new
 
@@ -17,22 +13,20 @@ class MainsController < ApplicationController
       if params.has_key?(:school) then #パラメータを受け取っている
         @inputtag = Inputtag.new(inputtag_params) #入力されているタグを取得
         @inputtag.freetagnum = @inputtag.count_freetag
-        @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry,20, DateTime.tomorrow, 1) #入力されているタグで検索
+        @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry) #入力されているタグで検索
       else #パラメータを受け取っていない
         @inputtag = Inputtag.new
-        if current_account.id != 1 then
-          @inputtag.setuniv(school: current_account.university, faculty: current_account.faculty, department: current_account.department) #タグに大学情報セット
-        end
-        @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry,20, DateTime.tomorrow, 1)
+        @inputtag.setuniv(school: current_account.university, faculty: current_account.faculty, department: current_account.department) #タグに大学情報セット
+        @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry)
       end
     else #ログインしていない
       if params.has_key?(:school) then #パラメータを受け取っている
         @inputtag = Inputtag.new(inputtag_params) #入力されているタグを取得
         @inputtag.freetagnum = @inputtag.count_freetag
-        @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry,20, DateTime.ntomorrow, @view_num) #入力されているタグで検索
+        @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry) #入力されているタグで検索
       else
         @inputtag = Inputtag.new
-        @recruitments = Recruitment.tagnamesearch([],2, DateTime.tomorrow, @view_num)
+        @recruitments = Recruitment.tagnamesearch([])
         #@recruitments = @recruitments.order(updated_at: "DESC")#データをすべて取得してソート
       end
     end
@@ -41,30 +35,39 @@ class MainsController < ApplicationController
   end
 
   def add_index
-    #@view_num = '1'
-    #@view_com_num = '5'
-    #@bookmark = Bookmark.new
+
+    @view_num = '1'
+    @view_com_num = '5'
+    @bookmark = Bookmark.new
+
+    @recruitments = Recruitment.all.limit(20).offset(params[:size])
 
     @recruitment = Recruitment.new
-
-    if params[:school].present? then #パラメータを受け取っている
-      inputtag = Inputtag.new(inputtag_params)
-      inputtag.freetagnum = inputtag.count_freetag
-      @recruitments = Recruitment.tagnamesearch(inputtag.tag_to_arry,20, params[:oldest].to_time, params[:view_num]) #入力されているタグで検索
-    else #パラメータを受け取っていない
-      inputtag = Inputtag.new
-      if current_account.id != 1 then
-        inputtag.setuniv(school: current_account.university, faculty: current_account.faculty, department: current_account.department) #タグに大学情報セット
-      end
-      inputtag.freetagnum = inputtag.count_freetag
-      @recruitments = Recruitment.tagnamesearch(inputtag.tag_to_arry,20, DateTime.tomorrow, params[:view_num])
-    end
+    @inputtag = Inputtag.new
+  
 
     if account_signed_in? then #ログインしている
-      taghistoryid = Taghistoryid.new #履歴用に変数準備
+      @taghistoryid = Taghistoryid.new #履歴用に変数準備
+      if params[:school].present? then #パラメータを受け取っている
+        @inputtag = Inputtag.new(inputtag_params) #入力されているタグを取得
+        @inputtag.freetagnum = @inputtag.count_freetag
+        @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry) #入力されているタグで検索
+        else #パラメータを受け取っていない
+        @inputtag = Inputtag.new
+        if current_account.acc_id != "administrato" then
+          @inputtag.setuniv(school: current_account.university, faculty: current_account.faculty, department: current_account.department) #タグに大学情報セット
+        end
+        @inputtag.freetagnum = @inputtag.count_freetag
+        @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry)
+        @recruitments = @recruitments.order(updated_at: "DESC")#データをすべて取得してソート
+      end
+    else #ログインしていない
+      @inputtag = Inputtag.new
+      @inputtag.freetagnum = @inputtag.count_freetag
+      @recruitments = Recruitment.all
+      @recruitments = @recruitments.order(updated_at: "DESC")#データをすべて取得してソート
     end
-
-    #render template: 'mains/index'
+    render template: 'mains/index'
   end
 
   def button_view
@@ -76,18 +79,18 @@ class MainsController < ApplicationController
     end
     @view_num = params[:id]
     if @view_num == '1'
-      @recruitments = Recruitment.tagnamesearch([],20,DateTime.tomorrow,1) #タイムライン
+      @recruitments = Recruitment.all                            #タイムライン
     elsif @view_num == '2'
-      @recruitments = Recruitment.tagnamesearch([],20,DateTime.tomorrow,2) #発言
+      @recruitments = Recruitment.all.where(re_id: '発言')       #発言
     elsif @view_num == '3'
-      @recruitments = Recruitment.tagnamesearch([],20,DateTime.tomorrow,3) #募集
+      @recruitments = Recruitment.all.where(re_id: '募集')       #募集
     elsif @view_num == '4'
-      @recruitments = Recruitment.tagnamesearch([],20,DateTime.tomorrow,4) #解決済み募集
+      @recruitments = Recruitment.all.where(resolved: '解決') #解決済み募集
     end
   end
 
   def button_form
-    @view_num =params[:view_num]
+
     @bookmark = Bookmark.new
 
     @recruitment = Recruitment.new

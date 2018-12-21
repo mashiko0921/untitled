@@ -1,5 +1,5 @@
 class RecruitmentsController < ApplicationController
-  before_action :set_recruitment, only: [ :edit, :add_result, :select, :destroy]
+  before_action :set_recruitment, only: [ :edit, :destroy]
   before_action :add_answer, only: [:update]
   # GET /recruitments
   # GET /recruitments.json
@@ -25,7 +25,7 @@ class RecruitmentsController < ApplicationController
       end
       return
     end
-    @comments = @recruitment.comments.limit(20) #20件を取得
+    @comments = Comment.where(recruitment_id: params[:id]).limit(20)  #20件を取得
   end
 
   #ajaxで動的に表示項目を追加する
@@ -33,34 +33,7 @@ class RecruitmentsController < ApplicationController
     #ajax通信以外は弾く
     return redirect_to '/404.html' unless request.xhr?
 
-    @comments = @recruitment.comments.where('updated_at > ?', Time.zone.parse(params[:offset_time])).limit(20)
-  end
-
-  #ajaxで動的に選択
-  def select
-    #ajax通信以外は弾く
-    return redirect_to '/404.html' unless request.xhr?
-
-    @comment = Comment.find_by(id: params[:comment_id])
-    if @comment.nil?
-      respond_to do |format|
-        format.html { redirect_to root_path, notice: '返信がありません' }
-        format.json { head :no_content }
-      end
-    end
-  end
-
-  def selected
-    #ajax通信以外は弾く
-    return redirect_to '/404.html' unless request.xhr?
-
-    @comment = Comment.find_by(id: params[:comment_id])
-    if @comment.nil?
-      respond_to do |format|
-        format.html { redirect_to root_path, notice: '返信がありません' }
-        format.json { head :no_content }
-      end
-    end
+    @comments = Comment.where(recruitment_id: params[:id]).limit(20).offset(params[:size])
   end
 
   # POST /recruitments
@@ -69,6 +42,9 @@ class RecruitmentsController < ApplicationController
     view_com_num = params[:id]
     @inputtag = Inputtag.new(inputtag_params)
     @inputtag.count_freetag
+    @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry)
+    if account_signed_in? then
+      @taghistoryid = Taghistoryid.new
 
     end
     @recruitment = Recruitment.new(recruitment_params)
@@ -96,7 +72,7 @@ class RecruitmentsController < ApplicationController
     respond_to do |format|
       if @recruitment.save
         Tagmap.associate(@recruitment.id, @inputtag.tag_to_arry)
-        format.html { redirect_to request_url(@inputtag.tag_to_arry, params[:view_num]), notice: '送信しました' }
+        format.html { redirect_to request_url(@inputtag.tag_to_arry), notice: '送信しました' }
         format.json { render :show, status: :created, location: @recruitment }
       else
         @view_num = '1'
@@ -160,8 +136,15 @@ class RecruitmentsController < ApplicationController
 
     def add_answer
       @recruitment = Recruitment.find(params[:id])
-      @recruitment_params = recruitment_params
-      @recruitment_params[:resolved] = "解決"
+      @recruitment_params = { "id":@recruitment.id,
+                              "acc_id":@recruitment.acc_id,
+                              "chat_id":@recruitment.chat_id,
+                              "resolved":"解決",
+                              "detail":@recruitment.detail,
+                              "title":@recruitment.title,
+                              "answer":params[:answer],
+                              "file_id":@recruitment.file_id,
+                              "chat":@recruitment.chat}
       if @recruitment_params[:chat] == "有"
         @recruitment_params[:answer] = "募集は終了しました"
       end
@@ -181,7 +164,7 @@ class RecruitmentsController < ApplicationController
       [params[:school],params[:faculty],params[:department],params[:tag1],params[:tag2],params[:tag3],params[:tag4],params[:tag5],params[:tag6],params[:tag7],params[:tag8],params[:tag9],params[:tag10]]
     end
 
-    def request_url(tag,view_num)
+    def request_url(tag)
       tag_url = "/?school="
 
       if tag[0].present? then
@@ -202,7 +185,6 @@ class RecruitmentsController < ApplicationController
           tag_url = tag_url + tag[2 + i]
         end
       end
-      tag_url = tag_url + "&view_num="+view_num.to_s
       tag_url
     end
 end

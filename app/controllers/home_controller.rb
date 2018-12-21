@@ -5,7 +5,8 @@ class HomeController < ApplicationController
   # アカウント情報画面
   def show
 
-    @home_button = '1'
+  
+    $home_button = 1
     @account = Account.find_by(acc_id: params[:acc_id])
     if @account.nil?
       respond_to do |format|
@@ -36,7 +37,7 @@ class HomeController < ApplicationController
   end
 
   def button
-    @home_button = params[:id]
+    $home_button = params[:id]
     @account = Account.find_by(acc_id: params[:acc_id])
     if @account.nil?
       respond_to do |format|
@@ -44,15 +45,10 @@ class HomeController < ApplicationController
         format.json { head :no_content }
       end
     else
-      if @home_button == '1'
       @recruitments = @account.recruitments.order(updated_at: "DESC")
-      elsif @home_button == '2'
-        #@recruitments = current_account.
-      elsif @home_button == '3'
-        @entry_chats = @account.entry_chats
-      end
-
-      render template: 'home/show'
+      @entry_chats = @account.entry_chats
     end
+
+    render template: 'home/show'
   end
 end

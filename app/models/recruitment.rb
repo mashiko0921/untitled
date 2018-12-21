@@ -9,6 +9,34 @@ class Recruitment < ApplicationRecord
   validates :detail, presence: true
   validates :title, presence: true
 
+=begin
+  # タグIDの配列からそのタグをすべて含む発言を取得する
+  def self.tagidsearch(tagid)
+    query = "SELECT  recruitments.* FROM recruitments"
+    if tagid.blank? then
+      Recruitment.all
+    else
+      cnt = 0
+      for i in 0..(tagid.count)
+        joinand = " INNER JOIN tagmaps AS tag"+(i+1).to_s+" ON tag"+(i+1).to_s+".com_id = recruitments.id AND tag"+(i+1).to_s+".tag_id = "
+        if tagid[i].to_s != "" then
+          query = query + joinand + tagid[i].to_s
+        else
+          query = query + joinand + "NULL"
+        end
+        cnt += 1
+      end
+      if cnt != 0 then
+
+        query = query + " ORDER BY recruitments.updated_at DESC"
+        Recruitment.find_by_sql([query])
+      else
+        Recruitment.none
+      end
+
+    end
+  end
+=end
 
   has_attached_file :photo,# styles: { medium: "300x300>"},
                     :url  =>"/assets/arts/:id/:style/:basename.:extension", # 画像保存先のURL先
@@ -21,7 +49,7 @@ class Recruitment < ApplicationRecord
 
 
   # タグ名の配列からそのタグをすべて含む発言を取得する
-  def self._tagnamesearch(tagname)
+  def self.tagnamesearch(tagname)
     query = "SELECT recruitments.* FROM recruitments"
     if tagname.blank? then
       tmp = Recruitment.all
@@ -58,22 +86,12 @@ class Recruitment < ApplicationRecord
 
 
   # タグ名の配列からそのタグをすべて含む発言を取得する
-  def self.tagnamesearch(tagname, limit, time, type)
+  def self.tagnamesearch2(tagname, limit, offset)
     query = "SELECT recruitments.* FROM recruitments"
     if tagname.blank? then
-      case type
-      when 1 then #タイムライン
-        com = Recruitment.where('updated_at < ?', time).order(updated_at: "DESC").limit(limit)
-      when 2 then #発言
-        com = Recruitment.where('updated_at < ?', time).where(re_id: '発言').order(updated_at: "DESC").limit(limit)
-      when 3 then #募集
-        com = Recruitment.where('updated_at < ?', time).where(re_id: '募集').order(updated_at: "DESC").limit(limit)
-      when 4 then #解決済み
-        com = Recruitment.where('updated_at < ?', time).where(resolved: '解決').order(updated_at: "DESC").limit(limit)
-      else
-        com = nil
-      end
-
+      com = Recruitment.order(updated_at: "DESC").limit(limit).offset(offset)
+      #tmp = Recruitment.all
+      #tmp.order(updated_at: "DESC")
     else
       cnt = 0
       for i in 0..(tagname.length)
@@ -90,37 +108,16 @@ class Recruitment < ApplicationRecord
         end
       end
       if cnt != 0 then
-        case type
-        when 1 then #タイムライン
-          query = query + " WHERE recruitments.updated_at < \""+time.to_s+"\" ORDER BY recruitments.updated_at DESC LIMIT " + limit.to_s
-        when 2 then #発言
-          query = query + " WHERE recruitments.updated_at < \""+time.to_s+"\" AND recruitments.re_id = '発言' ORDER BY recruitments.updated_at DESC LIMIT " + limit.to_s
-        when 3 then #募集
-          query = query + " WHERE recruitments.updated_at < \""+time.to_s+"\" AND recruitments.re_id = '募集' ORDER BY recruitments.updated_at DESC LIMIT " + limit.to_s
-        when 4 then #解決済み
-          query = query + " WHERE recruitments.updated_at < \""+time.to_s+"\" AND recruitments.resolved = '解決' ORDER BY recruitments.updated_at DESC LIMIT " + limit.to_s
-        else
-          com = nil
-        end
+        query = query + " ORDER BY recruitments.updated_at DESC LIMIT "+ offset.to_s + " , " + limit.to_s
         com = Recruitment.find_by_sql([query])
         if com.blank? then
-          com = Recruitment.none
+          Recruitment.none
         else
           com
         end
       else
-        case type
-        when 1 then #タイムライン
-          com = Recruitment.where('updated_at < ?', time).order(updated_at: "DESC").limit(limit)
-        when 2 then #発言
-          com = Recruitment.where('updated_at < ?', time).where(re_id: '発言').order(updated_at: "DESC").limit(limit)
-        when 3 then #募集
-          com = Recruitment.where('updated_at < ?', time).where(re_id: '募集').order(updated_at: "DESC").limit(limit)
-        when 4 then #解決済み
-          com = Recruitment.where('updated_at < ?', time).where(resolved: '解決').order(updated_at: "DESC").limit(limit)
-        else
-          com = nil
-        end
+        com = Recruitment.order(updated_at: "DESC").limit(limit).offset(offset)
+        #tmp.order(updated_at: "DESC")
       end
     end
     com

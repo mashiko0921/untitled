@@ -25,7 +25,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-
     <orderEntry type="module-library">
       <library name="actioncable (vbundled(5.2.1)) [path][gem]" type="rubylib">
         <properties>
@@ -1654,7 +1653,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" scope="PROVIDED" name="bundler (v1.17.1, ruby-2.5.3-p105) [gem]" level="application" />
-
   </component>
   <component name="RModuleSettingsStorage">
     <LOAD_PATH number="0" />
