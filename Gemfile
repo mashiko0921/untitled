@@ -67,3 +67,5 @@ gem 'rails-i18n'
 # 外部キー補助　
 # 参照データが消えたとき、それを外部キーとするデータを自動で消すため
 # gem 'foreigner'
+#
+gem 'paperclip'

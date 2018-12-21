@@ -1,7 +1,6 @@
 class RecruitmentsController < ApplicationController
   before_action :set_recruitment, only: [ :edit, :destroy]
   before_action :add_answer, only: [:update]
-
   # GET /recruitments
   # GET /recruitments.json
   def index
@@ -40,29 +39,35 @@ class RecruitmentsController < ApplicationController
   # POST /recruitments
   # POST /recruitments.json
   def create
-
+    view_com_num = params[:id]
     @inputtag = Inputtag.new(inputtag_params)
     @inputtag.count_freetag
     @recruitments = Recruitment.tagnamesearch(@inputtag.tag_to_arry)
     if account_signed_in? then
       @taghistoryid = Taghistoryid.new
+
+    end
+    @recruitment = Recruitment.new(recruitment_params)
+
+    if @recruitment.photo_file_size != nil #ファイルがあった場合、file_idにurlを格納
+      @recruitment.file_id= "/assets/arts/"+((Recruitment.last).id+1).to_s+"/original/" +@recruitment.photo_file_name
     end
 
-    @recruitment = Recruitment.new(recruitment_params)
     @recruitment.acc_id = current_account.acc_id#アカウントID
     @recruitment.account_id = current_account.id # アカウントの主キーのID 自動削除のため
     if @recruitment.detail.size ==0 || (@recruitment.detail.gsub(/\r\n|\r|\n|\s|\t/, "")).size==0
       @recruitment.detail = nil
     end
 
-    if $view_com_num == '5'
+    if view_com_num == '5'
       @recruitment.re_id  = '発言'
       @recruitment.title = "発言"
-    else if  $view_com_num == '6'
+    else if  view_com_num == '6'
            @recruitment.re_id  = '募集'
            @recruitment.resolved = '未解決'
          end
     end
+
 
     respond_to do |format|
       if @recruitment.save
@@ -70,6 +75,8 @@ class RecruitmentsController < ApplicationController
         format.html { redirect_to request_url(@inputtag.tag_to_arry), notice: '送信しました' }
         format.json { render :show, status: :created, location: @recruitment }
       else
+        @view_num = '1'
+        @view_com_num = '5'
         format.html { render :template => "mains/index" }
         format.json { render json: @recruitment.errors, status: :unprocessable_entity }
       end
@@ -114,7 +121,7 @@ class RecruitmentsController < ApplicationController
   # DELETE /recruitments/1.json
   def destroy
     @recruitment.destroy
-    Tagmap.delrelated(@recruitment.id)
+    #Tagmap.delrelated(@recruitment.id)
     respond_to do |format|
       format.html { redirect_to root_path, notice: 'Recruitment was successfully destroyed.' }
       format.json { head :no_content }
@@ -129,6 +136,7 @@ class RecruitmentsController < ApplicationController
 
     def add_answer
       @recruitment = Recruitment.find(params[:id])
+
       @recruitment_params = { "id":@recruitment.id,
                               "acc_id":@recruitment.acc_id,
                               "chat_id":@recruitment.chat_id,
@@ -146,8 +154,9 @@ class RecruitmentsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
 
     def recruitment_params
-      params.require(:recruitment).permit(:acc_id, :chat_id, :resolved, :detail, :title, :answer, :file_id, :chat)
+      params.require(:recruitment).permit(:acc_id, :chat_id, :resolved, :detail, :title, :answer, :file_id, :chat,:photo)
     end
+
 
     def inputtag_params
       params.permit(:school, :faculty, :department, :tag1, :tag2, :tag3, :tag4, :tag5, :tag6, :tag7, :tag8, :tag9, :tag10)
@@ -157,7 +166,7 @@ class RecruitmentsController < ApplicationController
     end
 
     def request_url(tag)
-      tag_url = "/mains/button/"+$view_com_num.to_s+"?school="
+      tag_url = "/?school="
 
       if tag[0].present? then
         tag_url = tag_url + tag[0]

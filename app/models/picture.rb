@@ -1,4 +1,6 @@
 class Picture < ActiveRecord::Base
+ # has_one :account
+ # belongs_to :recruitment
 
   # photoをattachファイルとする。stylesで画像サイズを定義できる
   has_attached_file :photo,# styles: { medium: "300x300>"},
@@ -9,4 +11,5 @@ class Picture < ActiveRecord::Base
   validates_attachment :photo, content_type: { content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif","application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document"] },
                        presence: true,  # ファイルの存在チェック
                        less_than: 5.megabytes# ファイルサイズのチェック
+
 end

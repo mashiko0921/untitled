@@ -3,10 +3,13 @@ class Recruitment < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_many :entry_chats, dependent: :destroy
   has_many :chat_comments, dependent: :destroy
+  has_many :tagmaps, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
+  #has_many :pictures, dependent: :destroy
   validates :detail, presence: true
   validates :title, presence: true
 
+=begin
   # タグIDの配列からそのタグをすべて含む発言を取得する
   def self.tagidsearch(tagid)
     query = "SELECT  recruitments.* FROM recruitments"
@@ -33,6 +36,17 @@ class Recruitment < ApplicationRecord
 
     end
   end
+=end
+
+  has_attached_file :photo,# styles: { medium: "300x300>"},
+                    :url  =>"/assets/arts/:id/:style/:basename.:extension", # 画像保存先のURL先
+                    :path => "#{Rails.root}/public/assets/arts/:id/:style/:basename.:extension" # サーバ上の画像保存先パス
+
+  # ファイルの拡張子を指定（これがないとエラーが発生する）
+  validates_attachment :photo, content_type: { content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif","application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document"] },
+                       #presence: true,  # ファイルの存在チェックはいらないはず
+                       less_than: 5.megabytes# ファイルサイズのチェック
+
 
   # タグ名の配列からそのタグをすべて含む発言を取得する
   def self.tagnamesearch(tagname)
@@ -46,9 +60,9 @@ class Recruitment < ApplicationRecord
         if tagname[i] != "" && tagname[i] != nil then
           tagquery = "SELECT  tags.* FROM tags WHERE tags.tag_name = \"" + tagname[i].encode("cp932", :invalid => :replace, :undef => :replace) + "\" LIMIT 1"
           tagid = Tag.find_by_sql([tagquery])
-          joinand = " INNER JOIN tagmaps AS tag"+(i+1).to_s+" ON tag"+(i+1).to_s+".com_id = recruitments.id AND tag"+(i+1).to_s+".tag_id = "
+          joinand = " INNER JOIN tagmaps AS tag"+(i+1).to_s+" ON tag"+(i+1).to_s+".recruitment_id = recruitments.id AND tag"+(i+1).to_s+".tag_id = "
           if tagid.present? then
-            query = query + joinand + tagid[0][:tag_id].to_s
+            query = query + joinand + tagid[0][:id].to_s
           else
             query = query + joinand + "NULL"
           end
@@ -69,4 +83,44 @@ class Recruitment < ApplicationRecord
       end
     end
   end
-end
+
+
+  # タグ名の配列からそのタグをすべて含む発言を取得する
+  def self.tagnamesearch2(tagname, limit, offset)
+    query = "SELECT recruitments.* FROM recruitments"
+    if tagname.blank? then
+      com = Recruitment.order(updated_at: "DESC").limit(limit).offset(offset)
+      #tmp = Recruitment.all
+      #tmp.order(updated_at: "DESC")
+    else
+      cnt = 0
+      for i in 0..(tagname.length)
+        if tagname[i] != "" && tagname[i] != nil then
+          tagquery = "SELECT  tags.* FROM tags WHERE tags.tag_name = \"" + tagname[i].encode("cp932", :invalid => :replace, :undef => :replace) + "\" LIMIT 1"
+          tagid = Tag.find_by_sql([tagquery])
+          joinand = " INNER JOIN tagmaps AS tag"+(i+1).to_s+" ON tag"+(i+1).to_s+".recruitment_id = recruitments.id AND tag"+(i+1).to_s+".tag_id = "
+          if tagid.present? then
+            query = query + joinand + tagid[0][:id].to_s
+          else
+            query = query + joinand + "NULL"
+          end
+          cnt += 1
+        end
+      end
+      if cnt != 0 then
+        query = query + " ORDER BY recruitments.updated_at DESC LIMIT "+ offset.to_s + " , " + limit.to_s
+        com = Recruitment.find_by_sql([query])
+        if com.blank? then
+          Recruitment.none
+        else
+          com
+        end
+      else
+        com = Recruitment.order(updated_at: "DESC").limit(limit).offset(offset)
+        #tmp.order(updated_at: "DESC")
+      end
+    end
+    com
+  end
+
+ end
