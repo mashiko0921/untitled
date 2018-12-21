@@ -1,54 +1,18 @@
 class Comment < ApplicationRecord
-  has_many :tagmaps
-  has_many :tags, through: :tagmaps
 
-  def self.tagidsearch(tagid)
-    query = "SELECT  comments.* FROM comments"
-    if tagid.blank? then
-      Comment.all
-    else
-      cnt = 0
-      for i in 0..(tagid.count)
-        if tagid[i].to_s != "" then
-          joinand = " INNER JOIN tagmaps AS tag"+(i+1).to_s+" ON tag"+(i+1).to_s+".com_id = comments.com_id AND tag"+(i+1).to_s+".tag_id = "
-          query = query + joinand + tagid[i].to_s
-          cnt += 1
-        end
-      end
-      if cnt != 0 then
-        query = query + " WHERE comments.p_com_ID IS NULL ORDER BY comments.update_time ASC"
-        Comment.find_by_sql([query])
-      else
-        Comment.none
-      end
+  validates :message, presence: true, length: { maximum: 1000 }
+  belongs_to :recruitment
+  belongs_to :account
 
-    end
-  end
-  def self.tagnamesearch(tagname)
-    query = "SELECT  comments.* FROM comments"
-    if tagname.blank? then
-      Comment.all
-    else
-      cnt = 0
-      for i in 0..(tagname.length)
-        if tagname[i] != "" && tagname[i] != nil then
-          tagquery = "SELECT  tags.* FROM tags WHERE tags.tag_name = \"" + tagname[i].encode("cp932", :invalid => :replace, :undef => :replace) + "\" LIMIT 1"
-          tagid = Tag.find_by_sql([tagquery])
+  has_attached_file :photo,# styles: { medium: "300x300>"},
+                    :url  =>"/assets/arts/:id/:style/:basename.:extension", # 画像保存先のURL先
+                    :path => "#{Rails.root}/public/assets/arts/:id/:style/:basename.:extension" # サーバ上の画像保存先パス
 
-          if tagid.present? then
-            #query = query +  joinand + tagname[i].encode("cp932", :invalid => :replace, :undef => :replace) + "\""
-            joinand = " INNER JOIN tagmaps AS tag"+(i+1).to_s+" ON tag"+(i+1).to_s+".com_id = comments.com_id AND tag"+(i+1).to_s+".tag_id = "
-            query = query + joinand + tagid[0][:tag_id].to_s
-            cnt += 1
-          end
-        end
-      end
-      if cnt != 0 then
-        query = query + " WHERE comments.p_com_ID IS NULL ORDER BY comments.update_time ASC"
-        Comment.find_by_sql([query])
-      else
-        Comment.none
-      end
-    end
-  end
+  # ファイルの拡張子を指定（これがないとエラーが発生する）
+  validates_attachment :photo, content_type: { content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif","application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document"] },
+                       #presence: true,  # ファイルの存在チェックはいらないはず
+                       less_than: 5.megabytes# ファイルサイズのチェック
+
+
 end
+

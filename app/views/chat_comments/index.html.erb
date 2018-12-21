@@ -1,21 +1,17 @@
+<%= stylesheet_link_tag "box.css", :media => "all" %>
 <p id="notice"><%= notice %></p>
 
 <h1 align="left">チャット画面</h1>
 <table class="button" >
-  <%= button_to '参加者', members_path, method: :get %>
+  <div class="button1">
+    <div class="on">
+  <%= button_to '参加者', members_path(@chat_num), method: :get %>
+    </div>
+  </div>
+  <br>
+  <br>
 </table>
 <table>
-  <thead>
-    <tr>
-      <th>ID/</th>
-      <th>チャットID/</th>
-      <th>アカウントID/</th>
-      <th>時間/</th>
-      <th>コメント文/</th>
-      <th>ファイルID</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
 
   <tbody>
     <% @chat_comments.each do |chat_comment| %>
@@ -26,7 +22,9 @@
         <td><%= chat_comment.time %></td>
         <td><%= chat_comment.comment %></td>
         <td><%= chat_comment.file_id %></td>
-        <td><%= link_to '削除', chat_comment, method: :delete, data: { confirm: '本当に削除しますか?' } %></td>
+        <% if current_account.acc_id == chat_comment.acc_id  || current_account.acc_id == 'administrator' %>
+          <td><%= link_to '削除', chat_comment, method: :delete, data: { confirm: '本当に削除しますか?' } %></td>
+        <%end %>
       </tr>
     <% end %>
   </tbody>
@@ -34,4 +32,4 @@
 
 <br>
 
-<%= render 'form', chat_comment: @chat_comment %>
+<%= render partial: 'form', locals:{chat_comment: @chat_comment, chat_num: @chat_num} %>

@@ -1,7 +1,12 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+Tag.create(id: 0, tag_type: true, tag_name: '京都大学', com_count: 0)
+Tag.create(id: 1, tag_type: true, tag_name: '医学部', com_count: 0)
+Tag.create(id: 2, tag_type: true, tag_name: '医学科', com_count: 0)
+
+
+Univinfo.create(id: 0, p_id: nil, stat: 0, name: '京都大学', tag_id: 0)
+Univinfo.create(id: 1, p_id: 0, stat: 1, name: '医学部', tag_id: 1)
+Univinfo.create(id: 2, p_id: 1, stat: 2, name: '医学科', tag_id: 2)
+
+
+Account.new(acc_id: 'administrator', name: '管理者', grade: '-', university: '-', faculty: '-', department: '-',
+               email: Settings.administrator[:email], password: Settings.administrator[:password]).save!
