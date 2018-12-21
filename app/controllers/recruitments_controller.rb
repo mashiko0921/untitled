@@ -136,6 +136,7 @@ class RecruitmentsController < ApplicationController
 
     def add_answer
       @recruitment = Recruitment.find(params[:id])
+
       @recruitment_params = { "id":@recruitment.id,
                               "acc_id":@recruitment.acc_id,
                               "chat_id":@recruitment.chat_id,
@@ -153,7 +154,7 @@ class RecruitmentsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
 
     def recruitment_params
-      params.require(:recruitment).permit(:acc_id, :chat_id, :resolved, :detail, :title, :answer, :file_id, :chat,:photo,:id)
+      params.require(:recruitment).permit(:acc_id, :chat_id, :resolved, :detail, :title, :answer, :file_id, :chat,:photo)
     end
 
 

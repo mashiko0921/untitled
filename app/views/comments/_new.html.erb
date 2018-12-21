@@ -14,6 +14,7 @@
   <table class="form" align="left">
     <td>
       <%= form.label :発言 %>
+      <div><%= form.file_field :photo %><div>
       <%= form.text_area :message %>
       <%= form.hidden_field :recruitment_id, value: comment.recruitment_id %>
     </td>
