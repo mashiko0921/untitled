@@ -15,8 +15,7 @@ class PicturesController < ApplicationController
   # GET /pictures/new
   def new
     @picture = Picture.new
-  end
-
+end
   # GET /pictures/1/edit
   def edit
   end
@@ -28,6 +27,8 @@ class PicturesController < ApplicationController
 
     respond_to do |format|
       if @picture.save
+
+
         format.html { redirect_to @picture, notice: 'Picture was successfully created.' }
         format.json { render :show, status: :created, location: @picture }
       else
@@ -66,9 +67,8 @@ class PicturesController < ApplicationController
     def set_picture
       @picture = Picture.find(params[:id])
     end
-
     # Never trust parameters from the scary internet, only allow the white list through.
     def picture_params
-      params.require(:picture).permit(:name,:photo)
+      params.require(:picture).permit(:photo,:name)
     end
 end

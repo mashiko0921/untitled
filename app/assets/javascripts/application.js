@@ -10,7 +10,14 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+//= require jquery
 //= require rails-ujs
 //= require activestorage
 //= require turbolinks
 //= require_tree .
+
+$(function() {
+    document.body.addEventListener('ajax:send', function(event) {
+        $('[type="submit"].all_disable').attr('disabled', true);//ボタンを無効化する
+    });
+});

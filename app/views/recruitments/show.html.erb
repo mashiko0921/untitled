@@ -1,0 +1,10 @@
+<p id="notice"><%= notice %></p>
+<%= link_to '戻る', '/' %>
+<p>
+  <!-- 追加箇所 開始-->
+<p>
+  <strong>ファイルは以下のリンクから参照できます:</strong>
+  <!--- Modelのstyleで指定した :midium など渡すことでサイズを指定できる -->
+  <%= link_to 'ファイルを表示する', @recruitment.file_id%>
+</p>
+<!-- 追加箇所 終了-->
