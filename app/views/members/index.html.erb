@@ -1,0 +1,22 @@
+<%= stylesheet_link_tag "box.css", :media => "all" %>
+<table>
+  <% @chat_members.each do |entry_chat| %>
+      <table width=50% class="box_comment">
+
+        <td width=50% class="box_comment2">
+          <%= link_to account_show_path(entry_chat.account.acc_id) do %>
+            <%= entry_chat.account.name %>👤
+          <% end %>
+        </td>
+        <td width=50% class="box_comment2"><%= entry_chat.account.acc_id %></td>
+      </table>
+  <% end %>
+
+</table>
+<table class="button">
+  <div class="button1">
+    <div class="on">
+  <%= button_to 'チャットに戻る', chat_comments_index_path(@chat_num), method: :get %>
+    </div>
+  </div>
+</table>
