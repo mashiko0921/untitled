@@ -1,0 +1,42 @@
+<!-- 16t4032n 田中裕隆 -->
+<h2>結果選択</h2>
+
+<table width="100%">
+  <tr>
+    <td>
+      <%= render partial: 'comments/recruitment', locals: {recruitment: @recruitment} %>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <table class="box3">
+        <tr>
+          <td>
+            <div id="add_results">
+              <%= render partial: "comment", collection: @comments %>
+            </div>
+            <table width="100%">
+              <tr>
+                <td>
+                  <div id="request_add_results">
+                    <%= render partial: 'recruitments/read_button', locals: {recruitment_id: params[:id], last_comment: @comments.last, offset_time: nil } %>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <div id="decide_answer">
+        <%= render partial: 'recruitments/decide_answer', locals: {recruitment: @recruitment, answer: nil} %>
+      </div>
+    </td>
+  </tr>
+
+</table>
